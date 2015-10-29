@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.netflix.hystrix.exception.HystrixTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,6 @@ import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.netflix.hystrix.exception.HystrixRuntimeException.FailureType;
 import com.netflix.hystrix.strategy.HystrixPlugins;
 import com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategy;
-import com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategyDefault;
 import com.netflix.hystrix.strategy.concurrency.HystrixContextRunnable;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 import com.netflix.hystrix.strategy.eventnotifier.HystrixEventNotifier;
@@ -260,21 +260,7 @@ import com.netflix.hystrix.util.HystrixTimer.TimerListener;
 
         if (properties.requestLogEnabled().get()) {
             /* store reference to request log regardless of which thread later hits it */
-            if (concurrencyStrategy instanceof HystrixConcurrencyStrategyDefault) {
-              // if we're using the default we support only optionally using a request context
-              if (HystrixRequestContext.isCurrentThreadInitialized()) {
-                currentRequestLog = HystrixRequestLog.getCurrentRequest(concurrencyStrategy);
-              } else {
-                currentRequestLog = null;
-              }
-            } else {
-              // if it's a custom strategy it must ensure the context is initialized
-              if (HystrixRequestLog.getCurrentRequest(concurrencyStrategy) != null) {
-                currentRequestLog = HystrixRequestLog.getCurrentRequest(concurrencyStrategy);
-              } else {
-                currentRequestLog = null;
-              }
-            }
+            currentRequestLog = HystrixRequestLog.getCurrentRequest(concurrencyStrategy);
         } else {
             currentRequestLog = null;
         }
@@ -601,7 +587,7 @@ import com.netflix.hystrix.util.HystrixTimer.TimerListener;
                     threadPool.markThreadRejection();
                     // use a fallback instead (or throw exception if not implemented)
                     return getFallbackOrThrowException(HystrixEventType.THREAD_POOL_REJECTED, FailureType.REJECTED_THREAD_EXECUTION, "could not be queued for execution", e);
-                } else if (t instanceof HystrixObservableTimeoutOperator.HystrixTimeoutException) {
+                } else if (t instanceof HystrixTimeoutException) {
                     /**
                      * Timeout handling
                      *
@@ -806,7 +792,10 @@ import com.netflix.hystrix.util.HystrixTimer.TimerListener;
 
                         if (fe instanceof UnsupportedOperationException) {
                             logger.debug("No fallback for HystrixCommand. ", fe); // debug only since we're throwing the exception and someone higher will do something with it
-                        /* executionHook for all errors */
+                            metrics.markFallbackMissing();
+                            executionResult = executionResult.addEvents(HystrixEventType.FALLBACK_MISSING);
+
+                            /* executionHook for all errors */
                             e = wrapWithOnErrorHook(failureType, e);
 
                             return Observable.error(new HystrixRuntimeException(failureType, _cmd.getClass(), getLogMessagePrefix() + " " + message + " and no fallback available.", e, fe));
@@ -943,12 +932,6 @@ import com.netflix.hystrix.util.HystrixTimer.TimerListener;
 
         public HystrixObservableTimeoutOperator(final AbstractCommand<R> originalCommand) {
             this.originalCommand = originalCommand;
-        }
-
-        public static class HystrixTimeoutException extends Exception {
-
-            private static final long serialVersionUID = 7460860948388895401L;
-
         }
 
         @Override

@@ -19,7 +19,7 @@
 	 * 
 	 * Publish this externally as "HystrixCommandMonitor"
 	 */
-	window.HystrixCommandMonitor = function(index, titleName, containerId, args) {
+	window.HystrixCommandMonitor = function(index, containerId, args) {
 		
 		var self = this; // keep scope under control
 		self.args = args;
@@ -28,7 +28,6 @@
 		}
 		
 		this.index = index;
-		this.titleName = titleName;
 		this.containerId = containerId;
 		
 		/**

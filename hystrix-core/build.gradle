@@ -3,7 +3,7 @@ apply plugin: 'me.champeau.gradle.jmh'
 
 dependencies {
     compile 'com.netflix.archaius:archaius-core:0.4.1'
-    compile 'io.reactivex:rxjava:1.0.13'
+    compile 'io.reactivex:rxjava:1.0.14'
     compile 'org.slf4j:slf4j-api:1.7.0'
     testCompile 'junit:junit-dep:4.10'
 }
@@ -37,7 +37,7 @@ jar {
 jmh {
 	fork = 10
 	iterations = 3
-	jmhVersion = '1.10.3'
+	jmhVersion = '1.11.1'
 	profilers = ['gc']
 	threads = 8
 	warmup = '1s'

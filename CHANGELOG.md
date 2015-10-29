@@ -1,5 +1,29 @@
 # Hystrix Releases #
 
+### Version 1.4.18 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.hystrix%22%20AND%20v%3A%221.4.18%22), [Bintray](https://bintray.com/netflixoss/maven/Hystrix/1.4.18/)) ###
+
+* [Pull 934](https://github.com/Netflix/Hystrix/pull/934) Remove duplicate EventSource from dashboard
+* [Pull 931](https://github.com/Netflix/Hystrix/pull/931) Make HystrixTimeoutException public
+* [Pull 930](https://github.com/Netflix/Hystrix/pull/930) Support collapser metrics in HystrixMetricPublisher implementations
+* [Pull 927](https://github.com/Netflix/Hystrix/pull/927) Dashboard fix to isCircuitBreakerOpen
+
+### Version 1.4.17 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.hystrix%22%20AND%20v%3A%221.4.17%22), [Bintray](https://bintray.com/netflixoss/maven/Hystrix/1.4.17/)) ###
+
+* [Pull 924](https://github.com/Netflix/Hystrix/pull/924) Dashboard protection against XSS
+* [Pull 923](https://github.com/Netflix/Hystrix/pull/923) Upgrade to RxJava 1.0.14
+* [Pull 922](https://github.com/Netflix/Hystrix/pull/922) Add DEBUG tag to Servo rolling counter and made it a GaugeMetric
+
+### Version 1.4.16 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.hystrix%22%20AND%20v%3A%221.4.16%22), [Bintray](https://bintray.com/netflixoss/maven/Hystrix/1.4.16/)) ###
+
+* [Pull 917](https://github.com/Netflix/Hystrix/pull/917) Better version of making servo-metrics-publisher extension-friendly
+* [Pull 912](https://github.com/Netflix/Hystrix/pull/912) Only look up if HystrixRequestCache is enabled once per HystrixObservableCollapser-invocation
+* [Pull 911](https://github.com/Netflix/Hystrix/pull/911) Unit test for large threadpool/small queue case in command execution
+* [Pull 910](https://github.com/Netflix/Hystrix/pull/910) Make servo-metrics-publisher more extension-friendly
+* [Pull 905](https://github.com/Netflix/Hystrix/pull/905) HystrixObservableCollapser examples
+* [Pull 902](https://github.com/Netflix/Hystrix/pull/902) Cleanup HystrixObservableCollapser unit tests
+* [Pull 900](https://github.com/Netflix/Hystrix/pull/900) Remove commons-collections dependency from hystrix-javanica
+* [Pull 897](https://github.com/Netflix/Hystrix/pull/897) Fix missing null check in hystrix-javanica HystrixCacheKeyGenerator
+
 ### Version 1.4.15 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.hystrix%22%20AND%20v%3A%221.4.15%22), [Bintray](https://bintray.com/netflixoss/maven/Hystrix/1.4.15/)) ###
 
 * [Pull 890](https://github.com/Netflix/Hystrix/pull/890) Allow multiple responses per collapser argument.  No semantic change for HystrixCollapser, but a bugfix to HystrixObservableCollapser
