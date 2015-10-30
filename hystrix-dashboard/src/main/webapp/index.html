@@ -19,7 +19,8 @@
 					name: $('#title').val(),
 					stream: $('#stream').val(),
 					auth: $('#authorization').val(),
-					delay: $('#delay').val()
+					delay: $('#delay').val(),
+					threadpools: $('#threadpools').prop('checked')
 				};
 
 				streams.push(s);
@@ -66,6 +67,8 @@
 	Delay: <input id="delay" type="textfield" size="10" placeholder="2000"></input>ms 
 	&nbsp;&nbsp;&nbsp;&nbsp; 
 	Title: <input id="title" type="textfield" size="60" placeholder="Example Hystrix App"></input><br><br>
+	<label><input id="threadpools" type="checkbox" checked=true>Monitor Thread Pools</input></label>
+	&nbsp;&nbsp;&nbsp;&nbsp; 
     Authorization: <input id="authorization" type="textfield" size="60" placeholder="Basic Zm9vOmJhcg=="></input><br>
 	<br>
 	<button onclick="addStream()">Add Stream</button>

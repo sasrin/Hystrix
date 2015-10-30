@@ -64,14 +64,15 @@
 					stream: decodeURIComponent(urlVars.stream),
 					delay: urlVars.delay,
 					name: decodeURIComponent(urlVars.title),
-					auth: urlVars.authorization
+					auth: urlVars.authorization,
+					threadpools: true
 			}] : [];
 
 			_.map(streams, function(s, i) {
 				var dependenciesId = 'dependencies_' + i;
 
 				var hystrixMonitor = new HystrixCommandMonitor(i, dependenciesId, {includeDetailIcon:false});
-				var dependencyThreadPoolMonitor = new HystrixThreadPoolMonitor(i, 'dependencyThreadPools_' + i);
+				var dependencyThreadPoolMonitor = s.threadpools ? new HystrixThreadPoolMonitor(i, 'dependencyThreadPools_' + i) : undefined;
 
 				hystrixStreams[i] = {
 					titleName: s.name || s.stream,
@@ -81,7 +82,8 @@
 
 				// sort by error+volume by default
 				hystrixMonitor.sortByErrorThenVolume();
-				dependencyThreadPoolMonitor.sortByVolume();
+				if (dependencyThreadPoolMonitor)
+					dependencyThreadPoolMonitor.sortByVolume();
 
 				var origin;
 				if(s != undefined) {
@@ -104,7 +106,8 @@
 
 				// add the listener that will process incoming events
 				source.addEventListener('message', hystrixMonitor.eventSourceMessageListener, false);
-				source.addEventListener('message', dependencyThreadPoolMonitor.eventSourceMessageListener, false);
+				if (dependencyThreadPoolMonitor)
+					source.addEventListener('message', dependencyThreadPoolMonitor.eventSourceMessageListener, false);
 
 				//	source.addEventListener('open', function(e) {
 				//		console.console.log(">>> opened connection, phase: " + e.eventPhase);
@@ -129,7 +132,7 @@
 		function addMonitors() {
 			$("#content").html(_.reduce(hystrixStreams, function(html, s, i) {
 				var hystrixMonitor = 'hystrixStreams[' + i + '].hystrixMonitor';
-				var dependencyThreadPoolMonitor = 'hystrixStreams[' + i + '].dependencyThreadPoolMonitor';
+				var dependencyThreadPoolMonitor = s.dependencyThreadPoolMonitor ? 'hystrixStreams[' + i + '].dependencyThreadPoolMonitor' : undefined;
 				var dependenciesId = 'dependencies_' + i;
 				var dependencyThreadPoolsId = 'dependencyThreadPools_' + i;
 				var title_name = 'title_name_' + i;
@@ -165,19 +168,21 @@
 							'<div id="' + dependenciesId + '" class="row dependencies"><span class="loading">Loading ...</span></div>' +
 							'<div class="spacer"></div>' +
 
-							'<div class="row">' +
-								'<div class="menubar">' +
-									'<div class="title">' +
-										'Thread Pools' +
-									'</div>' +
-									'<div class="menu_actions">' +
-										'Sort: <a href="javascript://" onclick="' + dependencyThreadPoolMonitor + '.sortAlphabetically();">Alphabetical</a> | ' +
-										'<a href="javascript://" onclick="' + dependencyThreadPoolMonitor + '.sortByVolume();">Volume</a> | ' +
+							(dependencyThreadPoolMonitor ? (
+								'<div class="row">' +
+									'<div class="menubar">' +
+										'<div class="title">' +
+											'Thread Pools' +
+										'</div>' +
+										'<div class="menu_actions">' +
+											'Sort: <a href="javascript://" onclick="' + dependencyThreadPoolMonitor + '.sortAlphabetically();">Alphabetical</a> | ' +
+											'<a href="javascript://" onclick="' + dependencyThreadPoolMonitor + '.sortByVolume();">Volume</a> | ' +
+										'</div>' +
 									'</div>' +
 								'</div>' +
-							'</div>' +
-							'<div id="' + dependencyThreadPoolsId + '" class="row dependencyThreadPools"><span class="loading">Loading ...</span></div>' +
-							'<div class="spacer"></div>' +
+								'<div id="' + dependencyThreadPoolsId + '" class="row dependencyThreadPools"><span class="loading">Loading ...</span></div>' +
+								'<div class="spacer"></div>'
+							) : '') +
 							'<div class="spacer"></div>' +
 						'</div>' +
 					'</div>';
