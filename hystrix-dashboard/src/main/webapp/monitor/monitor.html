@@ -70,9 +70,10 @@
 
 			_.map(streams, function(s, i) {
 				var dependenciesId = 'dependencies_' + i;
+				var dependencyThreadPoolsId = 'dependencyThreadPools_' + i;
 
 				var hystrixMonitor = new HystrixCommandMonitor(i, dependenciesId, {includeDetailIcon:false});
-				var dependencyThreadPoolMonitor = s.threadpools ? new HystrixThreadPoolMonitor(i, 'dependencyThreadPools_' + i) : undefined;
+				var dependencyThreadPoolMonitor = s.threadpools ? new HystrixThreadPoolMonitor(i, dependencyThreadPoolsId) : undefined;
 
 				hystrixStreams[i] = {
 					titleName: s.name || s.stream,
@@ -117,6 +118,12 @@
 				source.addEventListener('error', function(e) {
 					$("#" + dependenciesId + " .loading").html("Unable to connect to Command Metric Stream.");
 					$("#" + dependenciesId + " .loading").addClass("failed");
+
+					if (dependencyThreadPoolMonitor) {
+						$("#" + dependencyThreadPoolsId + " .loading").html("Unable to connect to Command Metric Stream.");
+						$("#" + dependencyThreadPoolsId + " .loading").addClass("failed");
+					}
+
 					if (e.eventPhase == EventSource.CLOSED) {
 						// Connection was closed.
 						console.log("Connection was closed on error: " + e);
